@@ -597,9 +597,13 @@ select option { background: #0c1c30 !important; }
         <div class="tier-info">
           <div class="tier-lbl">3금융권 (담보)</div>
           <div class="tier-name">오케이대부 (LTV 90%)</div>
-          <div class="tier-amt" id="t3amt">-</div>
-          <div class="tier-sub">DSR 규제 무관 · 담보가치 기준</div>
-          <span class="tier-tag tag-ok">✅ 담보 있으면 가능</span>
+          <div class="tier-amt" style="color:#a5d6a7 !important; font-size:16px !important;">담보감정가 × 90%</div>
+          <div class="tier-sub" style="color:#69f0ae !important; margin-top:4px !important; line-height:1.7 !important;">
+            DSR 규제 완전 무관<br>
+            담보가치 기준 한도 산정<br>
+            📞 정확한 한도 → 무료상담 문의
+          </div>
+          <span class="tier-tag tag-ok" style="margin-top:6px !important;">✅ 담보 있으면 1·2금융 초과 가능</span>
         </div>
       </div>
     </div>
@@ -782,7 +786,7 @@ function calculate() {
     el.className = 'tier-tag '+(t.ok?'tag-ok':'tag-warn');
     el.textContent = t.ok?'✅ 가능':'⚠️ 한도부족';
   });
-  document.getElementById('t3amt').textContent = fmt(maxA3);
+  // 3금융권은 담보감정가 기준으로 안내 문구 처리 (상담 유도)
 
   var sols = [];
   if (dsrA>40)  sols.push('기존 신용대출·마이너스통장 정리 → DSR 낮아져 은행 한도 회복');
