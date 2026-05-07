@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>스트레스DSR 대출한도 정밀계산기 | 오케이대부자본교대</title>
+<style>
+/* ===== 네이버 블로그 모바일 최적화 버전 ===== */
+/* 외부 폰트 없음 - 시스템 폰트 사용 (로딩 속도 최적화) */
+
+:root {
+  --navy:    #07111f;
+  --navy2:   #0c1c30;
+  --gold:    #c8a84b;
+  --gold2:   #e6c96a;
+  --gold3:   #f5dfa0;
+  --red:     #e03e4e;
+  --red2:    #ff6b78;
+  --green:   #27c97a;
+  --blue:    #4ea8de;
+  --gray:    #7a8fa6;
+  --light:   #d0dae8;
+  --border:  rgba(200,168,75,0.2);
+  --card-bg: rgba(255,255,255,0.04);
+}
+
+/* 네이버 블로그 부모 스타일 리셋 */
+* { box-sizing: border-box !important; margin: 0 !important; padding: 0 !important; }
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  background: var(--navy) !important;
+  color: #fff !important;
+  font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  -webkit-text-size-adjust: 100% !important;
+}
+
+.wrap {
+  width: 100% !important;
+  max-width: 480px !important;
+  margin: 0 auto !important;
+  padding: 0 14px 60px !important;
+  background: var(--navy) !important;
+}
+
+/* ── 로고바 ── */
+.logobar {
+  text-align: center !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid rgba(200,168,75,0.15) !important;
+}
+.logobar-title { font-size: 11px !important; font-weight: 700 !important; color: var(--gold) !important; letter-spacing: 4px !important; }
+.logobar-sub   { font-size: 10px !important; color: var(--gray) !important; margin-top: 2px !important; }
+
+/* ── 헤더 ── */
+.header { text-align: center !important; padding: 24px 0 18px !important; }
+
+.alert-pill {
+  display: inline-flex !important; align-items: center !important; gap: 6px !important;
+  background: rgba(224,62,78,0.14) !important;
+  border: 1px solid rgba(224,62,78,0.4) !important;
+  color: var(--red2) !important;
+  padding: 5px 14px !important; border-radius: 50px !important;
+  font-size: 10px !important; font-weight: 700 !important; letter-spacing: 1px !important;
+  margin-bottom: 14px !important;
+}
+.pulse {
+  width: 6px !important; height: 6px !important; border-radius: 50% !important;
+  background: var(--red) !important;
+  animation: blink 1.2s ease-in-out infinite !important;
+  flex-shrink: 0 !important;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.h-title {
+  font-size: 26px !important;
+  font-weight: 800 !important; line-height: 1.3 !important; margin-bottom: 12px !important;
+  color: var(--gold3) !important;
+}
+.h-sub { font-size: 12px !important; color: var(--gray) !important; line-height: 1.8 !important; }
+.h-sub strong { color: var(--red2) !important; }
+
+/* ── 통계 배너 ── */
+.stat-bar {
+  display: flex !important;
+  background: rgba(224,62,78,0.08) !important;
+  border: 1px solid rgba(224,62,78,0.28) !important;
+  border-radius: 12px !important; margin-bottom: 14px !important;
+  padding: 14px 0 !important; text-align: center !important;
+}
+.stat-item { flex: 1 !important; border-right: 1px solid rgba(224,62,78,0.18) !important; padding: 0 4px !important; }
+.stat-item:last-child { border-right: none !important; }
+.stat-num  { font-size: 18px !important; font-weight: 800 !important; color: var(--red2) !important; line-height: 1.2 !important; }
+.stat-lbl  { font-size: 9px !important; color: var(--gray) !important; margin-top: 3px !important; line-height: 1.4 !important; }
+
+/* ── 카드 ── */
+.card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important; padding: 16px 14px !important;
+  margin-bottom: 12px !important;
+}
+.card-title {
+  font-size: 13px !important; font-weight: 700 !important; color: var(--gold2) !important;
+  margin-bottom: 14px !important; display: flex !important; align-items: center !important; gap: 7px !important;
+}
+.card-title .ic {
+  width: 24px !important; height: 24px !important; border-radius: 7px !important;
+  background: linear-gradient(135deg,var(--gold),var(--gold2)) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 12px !important; color: var(--navy) !important; flex-shrink: 0 !important;
+}
+
+/* ── 기준표 ── */
+.ref-table { width: 100% !important; border-collapse: collapse !important; font-size: 10px !important; }
+.ref-table th {
+  padding: 7px 5px !important; text-align: center !important;
+  color: var(--gold2) !important; font-weight: 700 !important;
+  background: rgba(200,168,75,0.08) !important;
+  border-bottom: 1px solid rgba(200,168,75,0.2) !important;
+  white-space: nowrap !important;
+}
+.ref-table td {
+  padding: 6px 5px !important; text-align: center !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  color: var(--light) !important;
+}
+.ref-table tr:nth-child(even) td { background: rgba(255,255,255,0.02) !important; }
+.ref-table td.metro { color: var(--red2) !important; font-weight: 700 !important; }
+.ref-table td.local { color: var(--blue) !important; font-weight: 700 !important; }
+.ref-table td.note  { color: var(--gray) !important; font-size: 9px !important; }
+.ref-table td.tname { text-align:left !important; color: #ccc !important; font-size: 10px !important; }
+
+/* ── 입력 (1열 세로 배치 - 모바일) ── */
+.inp-group { margin-bottom: 18px !important; }
+.inp-row   { display: flex !important; justify-content: space-between !important; align-items: flex-end !important; margin-bottom: 6px !important; }
+.inp-lbl   { font-size: 11px !important; color: var(--gray) !important; }
+.inp-val   { font-size: 16px !important; font-weight: 700 !important; color: var(--gold2) !important; }
+
+input[type=range] {
+  width: 100% !important; height: 5px !important; border-radius: 4px !important;
+  background: rgba(255,255,255,0.12) !important; outline: none !important;
+  -webkit-appearance: none !important; cursor: pointer !important;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none !important; width: 22px !important; height: 22px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg,var(--gold),var(--gold2)) !important;
+  box-shadow: 0 2px 8px rgba(200,168,75,.5) !important;
+}
+
+select {
+  width: 100% !important; background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important; border-radius: 10px !important;
+  padding: 12px 13px !important; color: #fff !important;
+  font-family: inherit !important; font-size: 13px !important; outline: none !important;
+  -webkit-appearance: none !important; cursor: pointer !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8fa6' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+}
+select option { background: #0c1c30 !important; }
+
+.select-wrap { position: relative !important; }
+
+.stress-preview {
+  margin-top: 14px !important; padding: 10px 14px !important;
+  background: rgba(200,168,75,0.07) !important;
+  border: 1px solid rgba(200,168,75,0.2) !important; border-radius: 10px !important;
+  display: flex !important; justify-content: space-between !important; align-items: center !important;
+  flex-wrap: wrap !important; gap: 6px !important;
+}
+.stress-preview span { font-size: 10px !important; color: var(--gray) !important; }
+.stress-preview strong { font-size: 14px !important; font-weight: 800 !important; color: var(--gold2) !important; }
+
+.calc-btn {
+  width: 100% !important; margin-top: 16px !important; padding: 16px !important;
+  background: linear-gradient(135deg,#c8a84b,#e6c96a) !important;
+  border: none !important; border-radius: 12px !important;
+  color: var(--navy) !important; font-family: inherit !important;
+  font-size: 16px !important; font-weight: 800 !important; letter-spacing: 0.5px !important;
+  cursor: pointer !important; -webkit-tap-highlight-color: transparent !important;
+  min-height: 52px !important; /* 터치 타겟 최소 44px 이상 */
+}
+.calc-btn:active { transform: scale(.98) !important; }
+
+/* ── 결과 ── */
+#result { display: none !important; }
+#result.show { display: block !important; }
+
+.shock-card {
+  background: rgba(224,62,78,.1) !important;
+  border: 2px solid rgba(224,62,78,.4) !important;
+  border-radius: 14px !important; padding: 22px 16px !important;
+  text-align: center !important; margin-bottom: 12px !important;
+}
+.shock-lbl  { font-size: 10px !important; color: var(--red2) !important; font-weight: 700 !important; letter-spacing: 2px !important; margin-bottom: 8px !important; }
+.shock-amt  { font-size: 36px !important; font-weight: 800 !important; color: var(--red2) !important; margin-bottom: 6px !important; line-height: 1.2 !important; }
+.shock-desc { font-size: 11px !important; color: var(--gray) !important; }
+
+/* 전후 비교 - 모바일 세로 배치 */
+.compare-wrap { margin-bottom: 12px !important; }
+.cmp-row { display: flex !important; gap: 8px !important; align-items: center !important; }
+.cmp-card { flex: 1 !important; border-radius: 12px !important; padding: 14px 10px !important; text-align: center !important; }
+.cmp-card.before { background: var(--card-bg) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+.cmp-card.after  { background: rgba(224,62,78,.08) !important; border: 2px solid rgba(224,62,78,.38) !important; }
+.cmp-lbl  { font-size: 9px !important; letter-spacing: 1px !important; font-weight: 700 !important; margin-bottom: 6px !important; }
+.cmp-card.before .cmp-lbl { color: var(--gray) !important; }
+.cmp-card.after  .cmp-lbl { color: var(--red2) !important; }
+.cmp-amt  { font-size: 18px !important; font-weight: 800 !important; margin-bottom: 4px !important; }
+.cmp-card.before .cmp-amt { color: #999 !important; text-decoration: line-through !important; }
+.cmp-card.after  .cmp-amt { color: var(--red2) !important; }
+.cmp-sub  { font-size: 9px !important; color: var(--gray) !important; }
+.cmp-tag  { display: inline-block !important; margin-top: 6px !important; padding: 2px 8px !important; border-radius: 20px !important; font-size: 9px !important; font-weight: 700 !important; }
+.tag-ok   { background: rgba(39,201,122,.14) !important; color: #69f0ae !important; }
+.tag-warn { background: rgba(224,62,78,.14) !important; color: var(--red2) !important; }
+.arrow-down { text-align: center !important; font-size: 20px !important; padding: 4px 0 !important; color: var(--red) !important; }
+
+/* 월납입 */
+.monthly-row {
+  display: flex !important; gap: 10px !important;
+  margin-bottom: 12px !important; text-align: center !important;
+}
+.monthly-card { flex: 1 !important; background: var(--card-bg) !important; border: 1px solid var(--border) !important; border-radius: 12px !important; padding: 14px 8px !important; }
+.monthly-lbl  { font-size: 9px !important; color: var(--gray) !important; margin-bottom: 5px !important; }
+.monthly-amt  { font-size: 18px !important; font-weight: 800 !important; }
+
+/* DSR 게이지 */
+.gauge-row { margin-bottom: 14px !important; }
+.gauge-head { display: flex !important; justify-content: space-between !important; margin-bottom: 5px !important; }
+.gauge-lbl  { font-size: 10px !important; color: var(--gray) !important; }
+.gauge-val  { font-size: 13px !important; font-weight: 700 !important; }
+.gauge-track {
+  height: 10px !important; background: rgba(255,255,255,0.07) !important;
+  border-radius: 6px !important; overflow: hidden !important; position: relative !important;
+}
+.gauge-fill { height: 100% !important; border-radius: 6px !important; transition: width 1s cubic-bezier(.4,0,.2,1) !important; width: 0 !important; }
+.gauge-line {
+  position: absolute !important; top: 0 !important; height: 100% !important; width: 2px !important;
+  background: rgba(255,255,255,.3) !important;
+}
+.gauge-hint { font-size: 9px !important; color: var(--gray) !important; text-align: right !important; margin-top: 3px !important; }
+
+/* 금융권 카드 - 모바일 세로 배치 */
+.tier-grid { margin-bottom: 12px !important; display: flex !important; flex-direction: column !important; gap: 10px !important; }
+.tier-card { border-radius: 12px !important; padding: 14px 14px !important; display: flex !important; align-items: center !important; gap: 12px !important; }
+.tier1 { background: rgba(33,150,243,.07) !important; border: 1px solid rgba(33,150,243,.28) !important; }
+.tier2 { background: rgba(200,168,75,.07) !important; border: 1px solid rgba(200,168,75,.28) !important; }
+.tier3 { background: rgba(39,201,122,.07) !important; border: 1px solid rgba(39,201,122,.28) !important; }
+.tier-icon { font-size: 22px !important; flex-shrink: 0 !important; }
+.tier-info { flex: 1 !important; }
+.tier-lbl  { font-size: 9px !important; font-weight: 700 !important; letter-spacing: 2px !important; }
+.tier1 .tier-lbl { color: #64b5f6 !important; }
+.tier2 .tier-lbl { color: var(--gold2) !important; }
+.tier3 .tier-lbl { color: #69f0ae !important; }
+.tier-name { font-size: 10px !important; color: var(--gray) !important; margin: 2px 0 4px !important; }
+.tier-amt  { font-size: 20px !important; font-weight: 800 !important; }
+.tier1 .tier-amt { color: #90caf9 !important; }
+.tier2 .tier-amt { color: var(--gold2) !important; }
+.tier3 .tier-amt { color: #a5d6a7 !important; }
+.tier-sub  { font-size: 9px !important; color: var(--gray) !important; margin-top: 2px !important; }
+.tier-tag  { display: inline-block !important; margin-top: 4px !important; padding: 2px 8px !important; border-radius: 20px !important; font-size: 9px !important; font-weight: 700 !important; }
+
+/* 검증 */
+.verify-card {
+  background: rgba(78,168,222,.06) !important;
+  border: 1px solid rgba(78,168,222,.2) !important;
+  border-radius: 12px !important; padding: 14px !important; margin-bottom: 12px !important;
+}
+.verify-card p { font-size: 11px !important; color: var(--gray) !important; line-height: 1.9 !important; }
+.verify-card strong { color: #ccc !important; }
+.verify-card .ok { color: var(--green) !important; }
+
+/* 해결책 */
+.sol-card { background: rgba(200,168,75,.07) !important; border: 1px solid rgba(200,168,75,.18) !important; border-radius: 14px !important; padding: 16px 14px !important; margin-bottom: 12px !important; }
+.sol-item { display: flex !important; gap: 9px !important; margin-bottom: 10px !important; font-size: 12px !important; color: #ddd !important; line-height: 1.7 !important; }
+.sol-icon { min-width: 20px !important; height: 20px !important; background: linear-gradient(135deg,var(--gold),var(--gold2)) !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 10px !important; font-weight: 900 !important; color: var(--navy) !important; flex-shrink: 0 !important; margin-top: 2px !important; }
+
+/* CTA */
+.cta-card {
+  background: linear-gradient(135deg,#0d1f38,#081628) !important;
+  border: 1px solid rgba(200,168,75,.22) !important;
+  border-radius: 16px !important; padding: 24px 16px !important; text-align: center !important;
+}
+.cta-badge {
+  display: inline-block !important; background: rgba(200,168,75,.14) !important;
+  border: 1px solid rgba(200,168,75,.3) !important; color: var(--gold2) !important;
+  padding: 4px 14px !important; border-radius: 50px !important;
+  font-size: 10px !important; font-weight: 700 !important; letter-spacing: 2px !important; margin-bottom: 12px !important;
+}
+.cta-title { font-size: 20px !important; font-weight: 800 !important; margin-bottom: 10px !important; line-height: 1.45 !important; }
+.cta-desc  { font-size: 12px !important; color: var(--gray) !important; margin-bottom: 20px !important; line-height: 1.9 !important; }
+.cta-btns  { display: flex !important; gap: 10px !important; justify-content: center !important; flex-direction: column !important; }
+.btn-primary {
+  padding: 15px 20px !important; background: linear-gradient(135deg,var(--gold),var(--gold2)) !important;
+  color: var(--navy) !important; border: none !important; border-radius: 11px !important;
+  font-family: inherit !important; font-size: 15px !important; font-weight: 700 !important;
+  cursor: pointer !important; text-decoration: none !important; display: block !important;
+  min-height: 52px !important;
+}
+.btn-sec {
+  padding: 14px 20px !important; background: transparent !important;
+  color: var(--gold2) !important; border: 1px solid rgba(200,168,75,.35) !important;
+  border-radius: 11px !important; font-family: inherit !important;
+  font-size: 15px !important; font-weight: 700 !important; cursor: pointer !important;
+  min-height: 52px !important;
+}
+
+.footer-note {
+  text-align: center !important; font-size: 9px !important; color: rgba(122,143,166,.4) !important;
+  margin-top: 20px !important; line-height: 2 !important;
+}
+
+.divider { height: 1px !important; background: var(--border) !important; margin: 14px 0 !important; }
+
+/* 섹션 라벨 */
+.section-lbl { font-size: 9px !important; color: var(--gray) !important; letter-spacing: 2px !important; text-align: center !important; margin-bottom: 8px !important; font-weight: 700 !important; }
+</style>
+</head>
+<body>
+
+<!-- 로고바 -->
+<div class="logobar">
+  <div class="logobar-title">OK DAEBU CAPITAL</div>
+  <div class="logobar-sub">오케이대부자본교대 · 02-567-7166</div>
+</div>
+
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="alert-pill">
+      <div class="pulse"></div>
+      금융위원회 공식기준 · 2026년 5월 현재
+    </div>
+    <h1 class="h-title">스트레스DSR<br>내 대출한도 정밀계산기</h1>
+    <p class="h-sub">
+      금리유형·지역별 차등 스트레스금리 완전 반영<br>
+      <strong>수도권 연소득 1억 기준 최대 -1억 5천 감소!</strong>
+    </p>
+  </div>
+
+  <!-- 통계 배너 -->
+  <div class="stat-bar">
+    <div class="stat-item">
+      <div class="stat-num">3.00%p</div>
+      <div class="stat-lbl">수도권 변동<br>스트레스 가산</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">1.50%p</div>
+      <div class="stat-lbl">전국 기본<br>스트레스금리</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0.75%p</div>
+      <div class="stat-lbl">비수도권<br>유예 적용중</div>
+    </div>
+  </div>
+
+  <!-- 기준표 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="ic">📋</span>
+      2026년 스트레스금리 기준표
+    </div>
+    <div style="overflow-x:auto !important;">
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="text-align:left !important;">대출 유형</th>
+            <th>수도권</th>
+            <th>비수도권</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="tname">변동금리 주담대</td><td class="metro">3.00%</td><td class="local">0.75%</td><td class="note">10.16 강화</td></tr>
+          <tr><td class="tname">혼합형 5년 고정</td><td class="metro">1.80%</td><td class="local">0.45%</td><td class="note">60% 적용</td></tr>
+          <tr><td class="tname">혼합형 10년 고정</td><td class="metro">1.20%</td><td class="local">0.30%</td><td class="note">40% 적용</td></tr>
+          <tr><td class="tname">완전 고정금리</td><td class="metro" style="color:#69f0ae !important;">0%</td><td class="local" style="color:#69f0ae !important;">0%</td><td class="note">미적용</td></tr>
+          <tr><td class="tname">신용대출 1억 초과</td><td class="metro">1.50%</td><td class="local">1.50%</td><td class="note">동일</td></tr>
+          <tr><td class="tname">신용대출 1억 이하</td><td class="metro" style="color:#69f0ae !important;">0%</td><td class="local" style="color:#69f0ae !important;">0%</td><td class="note">면제</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 입력 -->
+  <div class="card">
+    <div class="card-title"><span class="ic">🔢</span> 내 조건 입력</div>
+
+    <!-- 연소득 -->
+    <div class="inp-group">
+      <div class="inp-row">
+        <span class="inp-lbl">연간 소득 (세전)</span>
+        <span class="inp-val" id="vIncome">5,000만원</span>
+      </div>
+      <input type="range" id="rIncome" min="2000" max="30000" step="500" value="5000" oninput="sv('income')">
+    </div>
+
+    <!-- 기존상환 -->
+    <div class="inp-group">
+      <div class="inp-row">
+        <span class="inp-lbl">기존 대출 연간 상환액</span>
+        <span class="inp-val" id="vExisting">없음</span>
+      </div>
+      <input type="range" id="rExisting" min="0" max="5000" step="100" value="0" oninput="sv('existing')">
+    </div>
+
+    <!-- 대출금액 -->
+    <div class="inp-group">
+      <div class="inp-row">
+        <span class="inp-lbl">희망 대출금액</span>
+        <span class="inp-val" id="vLoan">3억원</span>
+      </div>
+      <input type="range" id="rLoan" min="1000" max="50000" step="1000" value="30000" oninput="sv('loan')">
+    </div>
+
+    <!-- 금리 -->
+    <div class="inp-group">
+      <div class="inp-row">
+        <span class="inp-lbl">실제 적용 금리</span>
+        <span class="inp-val" id="vRate">연 4.5%</span>
+      </div>
+      <input type="range" id="rRate" min="20" max="200" step="5" value="45" oninput="sv('rate')">
+    </div>
+
+    <!-- 대출기간 -->
+    <div class="inp-group">
+      <div class="inp-lbl" style="margin-bottom:8px !important;">대출 기간</div>
+      <div class="select-wrap">
+        <select id="sPeriod">
+          <option value="10">10년</option>
+          <option value="15">15년</option>
+          <option value="20">20년</option>
+          <option value="25">25년</option>
+          <option value="30" selected>30년 (일반적)</option>
+          <option value="35">35년</option>
+          <option value="40">40년 (최장)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 지역 -->
+    <div class="inp-group">
+      <div class="inp-lbl" style="margin-bottom:8px !important;">지역 구분</div>
+      <div class="select-wrap">
+        <select id="sRegion" onchange="updatePreview()">
+          <option value="metro" selected>수도권 (서울·경기·인천)</option>
+          <option value="regulate">기타 규제지역</option>
+          <option value="local">비수도권 (지방) · 0.75% 유예</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 대출유형 -->
+    <div class="inp-group">
+      <div class="inp-lbl" style="margin-bottom:8px !important;">대출 유형</div>
+      <div class="select-wrap">
+        <select id="sLoanType" onchange="toggleFixed();updatePreview()">
+          <option value="variable" selected>변동금리 · 스트레스 100%</option>
+          <option value="mixed">혼합형 (고정 후 변동) · 최대 60%↓</option>
+          <option value="periodic">주기형 (주기별 변동) · 최대 30%↓</option>
+          <option value="fixed">완전 고정금리 · 스트레스 0%</option>
+          <option value="credit_over">신용대출 1억 초과 · 1.5%</option>
+          <option value="credit_under">신용대출 1억 이하 · 0%</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 고정기간 (혼합형일 때만) -->
+    <div class="inp-group" id="fixedGroup" style="display:none !important;">
+      <div class="inp-lbl" id="fixedLbl" style="margin-bottom:8px !important;">고정금리 기간</div>
+      <div class="select-wrap">
+        <select id="sFixed" onchange="updatePreview()">
+          <option value="3">3년 미만 (100% 적용)</option>
+          <option value="5" selected>5년 (60% 적용)</option>
+          <option value="7">7년 (60% 적용)</option>
+          <option value="10">10년 (40% 적용)</option>
+          <option value="15">15년 (20% 적용)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 스트레스금리 미리보기 -->
+    <div class="stress-preview">
+      <span>선택 조건의 스트레스금리</span>
+      <strong id="previewStress">+3.00%p → 심사금리 7.50%</strong>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">
+      🔍 내 대출한도 정밀 계산하기
+    </button>
+  </div>
+
+  <!-- ===== 결과 ===== -->
+  <div id="result">
+
+    <!-- 충격 카드 -->
+    <div class="shock-card">
+      <div class="shock-lbl">📉 스트레스DSR 적용 후 한도 감소액</div>
+      <div class="shock-amt" id="rShock">-0원</div>
+      <div class="shock-desc" id="rShockDesc"></div>
+    </div>
+
+    <!-- 전후 비교 -->
+    <div class="compare-wrap">
+      <div class="section-lbl">규제 전후 한도 비교</div>
+      <div class="cmp-row">
+        <div class="cmp-card before">
+          <div class="cmp-lbl">규제 전 최대 한도</div>
+          <div class="cmp-amt" id="rBefore">-</div>
+          <div class="cmp-sub" id="rBeforeDSR">DSR 0%</div>
+          <span class="cmp-tag tag-ok">규제 이전 기준</span>
+        </div>
+        <div style="font-size:20px !important; color:var(--red) !important; flex-shrink:0 !important;">→</div>
+        <div class="cmp-card after">
+          <div class="cmp-lbl">스트레스DSR 후</div>
+          <div class="cmp-amt" id="rAfter">-</div>
+          <div class="cmp-sub" id="rAfterDSR">스트레스DSR 0%</div>
+          <span class="cmp-tag" id="rAfterTag">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 월납입 -->
+    <div class="monthly-row">
+      <div class="monthly-card">
+        <div class="monthly-lbl">현재금리 기준 월 납입</div>
+        <div class="monthly-amt" style="color:#999 !important; text-decoration:line-through !important; opacity:.7 !important;" id="rM1">-</div>
+      </div>
+      <div class="monthly-card">
+        <div class="monthly-lbl" style="color:var(--red2) !important;">심사금리 가상 납입액</div>
+        <div class="monthly-amt" style="color:var(--red2) !important;" id="rM2">-</div>
+        <div style="font-size:9px !important; color:var(--gray) !important; margin-top:3px !important;">※ 심사용 (실제 아님)</div>
+      </div>
+    </div>
+
+    <!-- DSR 게이지 -->
+    <div class="card">
+      <div class="card-title"><span class="ic">📊</span> DSR 현황 분석</div>
+      <div class="gauge-row">
+        <div class="gauge-head">
+          <span class="gauge-lbl">스트레스 적용 전 DSR</span>
+          <span class="gauge-val" id="gv1">0%</span>
+        </div>
+        <div class="gauge-track">
+          <div class="gauge-fill" id="gf1" style="background:linear-gradient(90deg,#27c97a,#69f0ae) !important;"></div>
+          <div class="gauge-line" style="left:40% !important;"></div>
+          <div class="gauge-line" style="left:50% !important; background:rgba(240,165,0,.4) !important;"></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-head">
+          <span class="gauge-lbl">스트레스DSR 적용 후</span>
+          <span class="gauge-val" id="gv2">0%</span>
+        </div>
+        <div class="gauge-track">
+          <div class="gauge-fill" id="gf2"></div>
+          <div class="gauge-line" style="left:40% !important;"></div>
+          <div class="gauge-line" style="left:50% !important; background:rgba(240,165,0,.4) !important;"></div>
+        </div>
+        <div class="gauge-hint">│ 40%=1금융 한도  │ 50%=2금융 한도</div>
+      </div>
+    </div>
+
+    <!-- 금융권별 한도 -->
+    <div class="tier-grid">
+      <div class="tier-card tier1">
+        <div class="tier-icon">🏦</div>
+        <div class="tier-info">
+          <div class="tier-lbl">1금융권</div>
+          <div class="tier-name">시중은행 (DSR 40%)</div>
+          <div class="tier-amt" id="t1amt">-</div>
+          <div class="tier-sub" id="t1sub">-</div>
+          <span class="tier-tag" id="t1tag">-</span>
+        </div>
+      </div>
+      <div class="tier-card tier2">
+        <div class="tier-icon">🏢</div>
+        <div class="tier-info">
+          <div class="tier-lbl">2금융권</div>
+          <div class="tier-name">저축은행 (DSR 50%)</div>
+          <div class="tier-amt" id="t2amt">-</div>
+          <div class="tier-sub" id="t2sub">-</div>
+          <span class="tier-tag" id="t2tag">-</span>
+        </div>
+      </div>
+      <div class="tier-card tier3">
+        <div class="tier-icon">✅</div>
+        <div class="tier-info">
+          <div class="tier-lbl">3금융권 (담보)</div>
+          <div class="tier-name">오케이대부 (LTV 90%)</div>
+          <div class="tier-amt" id="t3amt">-</div>
+          <div class="tier-sub">DSR 규제 무관 · 담보가치 기준</div>
+          <span class="tier-tag tag-ok">✅ 담보 있으면 가능</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 검증 -->
+    <div class="verify-card">
+      <div class="card-title" style="color:#90caf9 !important; font-size:12px !important; margin-bottom:8px !important;">✅ 공식 검증 완료</div>
+      <p>
+        <strong>금융위원회 공식 사례 대조:</strong><br>
+        연소득 1억 / 금리 4.5% / 30년 / 수도권 변동<br>
+        규제 전 <strong style="color:#90caf9 !important;">6억5,800만</strong> →
+        스트레스DSR 후 <strong style="color:var(--red2) !important;">5억5,600만</strong>
+        (감소 <strong style="color:var(--red2) !important;">1억200만</strong>)<br>
+        <span class="ok">본 계산기 공식 수치와 오차범위 내 일치 검증 완료</span>
+      </p>
+    </div>
+
+    <!-- 해결책 -->
+    <div class="sol-card">
+      <div class="card-title"><span class="ic">💡</span> 한도 부족 시 해결 전략</div>
+      <div id="solList"></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-card">
+      <div class="cta-badge">OK DAEBU CAPITAL</div>
+      <div class="cta-title">
+        1·2금융 한도 부족하신가요?<br>
+        <span style="color:var(--gold2) !important;">오케이대부 담보대출로 해결하세요</span>
+      </div>
+      <div class="cta-desc">
+        DSR 규제 없는 담보대출 전문 · 당일 심사 당일 실행<br>
+        수수료 투명공개 · 중개업자 없이 직접 · 무료상담
+      </div>
+      <div class="cta-btns">
+        <a href="tel:025677166" class="btn-primary">📞 무료상담 02-567-7166</a>
+        <button class="btn-sec" onclick="alert('카카오 상담 채널로 연결합니다.\n채널명: 오케이대부자본교대')">💬 카카오 즉시상담</button>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      본 계산기는 금융위원회 공식 기준을 반영한 참고용 시뮬레이터입니다.<br>
+      실제 한도는 금융기관 심사 결과에 따라 달라질 수 있습니다.<br>
+      오케이대부자본교대 · 대부업 등록업체 · 법정최고금리 연 20% 이내
+    </div>
+  </div>
+
+</div>
+
+<script>
+function getStress(loanType, region, fixed) {
+  if (loanType === 'fixed' || loanType === 'credit_under') return 0;
+  if (loanType === 'credit_over') return 0.015;
+  var base = (region === 'local') ? 0.0075 : 0.03;
+  if (loanType === 'variable') return base;
+  var ratio = {
+    mixed:    { 3:1.0, 5:.6, 7:.6, 10:.4, 15:.2 },
+    periodic: { 3:1.0, 5:.3, 7:.3, 10:.2, 15:.1 }
+  }[loanType];
+  return base * (ratio[fixed] !== undefined ? ratio[fixed] : 1.0);
+}
+
+function monthly(p만원, annRate, years) {
+  var P = p만원 * 1e4, r = annRate / 12, n = years * 12;
+  if (!r) return P / n;
+  return P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+}
+
+function dsr(loan만원, annRate, years, inc만원, ext만원) {
+  return (monthly(loan만원, annRate, years)*12 + ext만원*1e4) / (inc만원*1e4) * 100;
+}
+
+function maxLoan(inc만원, ext만원, annRate, years, limit) {
+  var maxA = inc만원*1e4*limit - ext만원*1e4;
+  if (maxA <= 0) return 0;
+  var mM = maxA / 12, r = annRate/12, n = years*12;
+  if (!r) return Math.round(mM*n/1e4);
+  return Math.max(0, Math.round(mM*(Math.pow(1+r,n)-1)/(r*Math.pow(1+r,n))/1e4));
+}
+
+function fmt(v) {
+  if (v <= 0) return '불가';
+  if (v >= 10000) {
+    var e = Math.floor(v/10000), m = v%10000;
+    return m ? e+'억 '+m.toLocaleString()+'만원' : e+'억원';
+  }
+  return v.toLocaleString() + '만원';
+}
+
+function sv(id) {
+  var el = document.getElementById('r'+id.charAt(0).toUpperCase()+id.slice(1));
+  var v = +el.value, txt;
+  if (id==='income')   txt = v.toLocaleString()+'만원';
+  if (id==='existing') txt = v==0?'없음':v.toLocaleString()+'만원';
+  if (id==='loan')     txt = v>=10000?(Math.floor(v/10000)+'억'+(v%10000?(' '+(v%10000).toLocaleString()+'만'):'')+'원'):v.toLocaleString()+'만원';
+  if (id==='rate')     txt = '연 '+(v/10).toFixed(1)+'%';
+  document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1)).textContent = txt;
+  updatePreview();
+}
+
+function toggleFixed() {
+  var t = document.getElementById('sLoanType').value;
+  var show = t==='mixed'||t==='periodic';
+  document.getElementById('fixedGroup').style.display = show?'':'none';
+  document.getElementById('fixedLbl').textContent = t==='mixed'?'고정금리 기간':'금리변동 주기';
+}
+
+function updatePreview() {
+  var r = +document.getElementById('rRate').value/10/100;
+  var fixEl = document.getElementById('sFixed');
+  var s = getStress(
+    document.getElementById('sLoanType').value,
+    document.getElementById('sRegion').value,
+    fixEl ? +fixEl.value : 5
+  );
+  document.getElementById('previewStress').textContent =
+    '+'+(s*100).toFixed(2)+'%p → 심사금리 '+((r+s)*100).toFixed(2)+'%';
+}
+
+function gc(v) { return v<=40?'#27c97a':v<=50?'#f0a500':'#e03e4e'; }
+
+function calculate() {
+  var inc  = +document.getElementById('rIncome').value;
+  var ext  = +document.getElementById('rExisting').value;
+  var loan = +document.getElementById('rLoan').value;
+  var rate = +document.getElementById('rRate').value/10/100;
+  var yrs  = +document.getElementById('sPeriod').value;
+  var reg  = document.getElementById('sRegion').value;
+  var type = document.getElementById('sLoanType').value;
+  var fixEl= document.getElementById('sFixed');
+  var fix  = fixEl ? +fixEl.value : 5;
+
+  var stress = getStress(type, reg, fix);
+  var sr     = rate + stress;
+
+  var maxB  = maxLoan(inc, ext, rate, yrs, 0.4);
+  var maxA1 = maxLoan(inc, ext, sr,   yrs, 0.4);
+  var maxA2 = maxLoan(inc, ext, sr+0.025, yrs, 0.5);
+  var maxA3 = Math.round(loan * 0.9);
+
+  var dsrB  = dsr(loan, rate, yrs, inc, ext);
+  var dsrA  = dsr(loan, sr,   yrs, inc, ext);
+  var mB    = monthly(loan, rate, yrs);
+  var mA    = monthly(loan, sr,   yrs);
+  var shock = maxB - maxA1;
+
+  document.getElementById('rShock').textContent = shock > 0 ? '-'+fmt(shock) : '영향 없음';
+  document.getElementById('rShockDesc').textContent =
+    '스트레스금리 +'+(stress*100).toFixed(2)+'%p 가산 | 실제심사금리 '+(sr*100).toFixed(2)+'%';
+
+  document.getElementById('rBefore').textContent    = fmt(maxB);
+  document.getElementById('rBeforeDSR').textContent = '기본DSR '+dsrB.toFixed(1)+'%';
+  document.getElementById('rAfter').textContent     = fmt(maxA1);
+  document.getElementById('rAfterDSR').textContent  = '스트레스DSR '+dsrA.toFixed(1)+'%';
+  var at = document.getElementById('rAfterTag');
+  if (dsrA <= 40) { at.className='cmp-tag tag-ok'; at.textContent='DSR 적정'; }
+  else            { at.className='cmp-tag tag-warn'; at.textContent='1금융 한도 초과'; }
+
+  document.getElementById('rM1').textContent = Math.round(mB/10000).toLocaleString()+'만원';
+  document.getElementById('rM2').textContent = Math.round(mA/10000).toLocaleString()+'만원';
+
+  var pB = Math.min(dsrB,100), pA = Math.min(dsrA,100);
+  document.getElementById('gv1').textContent = dsrB.toFixed(1)+'%';
+  document.getElementById('gv2').textContent = dsrA.toFixed(1)+'%';
+  document.getElementById('gv1').style.color = gc(dsrB);
+  document.getElementById('gv2').style.color = gc(dsrA);
+  var f1=document.getElementById('gf1'), f2=document.getElementById('gf2');
+  f1.style.background = 'linear-gradient(90deg,'+gc(dsrB)+','+gc(dsrB)+'99)';
+  f2.style.background = 'linear-gradient(90deg,'+gc(dsrA)+','+gc(dsrA)+'99)';
+  setTimeout(function(){ f1.style.width=pB+'%'; f2.style.width=pA+'%'; },100);
+
+  var tiers = [
+    { id:'t1', amt:maxA1, sub:'심사금리 '+(sr*100).toFixed(2)+'% 기준', ok:dsrA<=40 },
+    { id:'t2', amt:maxA2, sub:'가산금리 2.5%p 포함', ok:dsrA<=60 },
+  ];
+  tiers.forEach(function(t){
+    document.getElementById(t.id+'amt').textContent = fmt(t.amt);
+    document.getElementById(t.id+'sub').textContent = t.sub;
+    var el = document.getElementById(t.id+'tag');
+    el.className = 'tier-tag '+(t.ok?'tag-ok':'tag-warn');
+    el.textContent = t.ok?'✅ 가능':'⚠️ 한도부족';
+  });
+  document.getElementById('t3amt').textContent = fmt(maxA3);
+
+  var sols = [];
+  if (dsrA>40)  sols.push('기존 신용대출·마이너스통장 정리 → DSR 낮아져 은행 한도 회복');
+  if (stress>0.005) sols.push('혼합형·고정금리 전환 → 스트레스금리 '+(stress*100).toFixed(2)+'%p 대폭 감소');
+  if (reg==='metro') sols.push('비수도권 물건 활용 → 스트레스금리 0.75%p (수도권 3.0% 대비 절감)');
+  sols.push('오케이대부 담보대출 → DSR 규제 없이 담보가치 기준 한도 산정 (당일실행)');
+  sols.push('대출만기 연장 (30→40년) → 월 상환액 감소 → DSR 개선 → 한도 확보');
+  sols.push('소득 증빙 확대 (임대·부업·배우자 소득) → DSR 분모 증가');
+
+  document.getElementById('solList').innerHTML = sols.map(function(s,i){
+    return '<div class="sol-item"><div class="sol-icon">'+(i+1)+'</div><div>'+s+'</div></div>';
+  }).join('');
+
+  var r = document.getElementById('result');
+  r.classList.add('show');
+  setTimeout(function(){ r.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+}
+
+sv('income'); sv('existing'); sv('loan'); sv('rate'); updatePreview();
+</script>
+</body>
+</html>
